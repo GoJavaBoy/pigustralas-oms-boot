@@ -10,6 +10,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 @Service
@@ -23,12 +24,15 @@ public class FCMInitializer {
     @PostConstruct
     public void initialize() {
         try {
+            FileInputStream serviceAccount =
+                    new FileInputStream("src/main/java/net/mestwin/fcmpushnotifications/google/androidrealtimelocation2-a4837-firebase-adminsdk-l4ckv-cc25155c4b.json");
+
             FirebaseOptions options = new FirebaseOptions.Builder()
-                    .setCredentials(GoogleCredentials.fromStream(new ClassPathResource(firebaseConfigPath).getInputStream())).build();
-            if (FirebaseApp.getApps().isEmpty()) {
-                FirebaseApp.initializeApp(options);
-                logger.info("Firebase application has been initialized");
-            }
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .setDatabaseUrl("https://androidrealtimelocation2-a4837.firebaseio.com")
+                    .build();
+
+            FirebaseApp.initializeApp(options);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
